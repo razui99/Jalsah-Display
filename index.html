@@ -17,13 +17,11 @@
             color: #fff;
             min-height: 100vh;
             padding: 20px;
-            overflow-x: hidden;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
         }
 
         .header {
@@ -32,23 +30,15 @@
             padding: 30px;
             background: rgba(255, 255, 255, 0.05);
             border-radius: 20px;
-            backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .header h1 {
-            font-size: 3.2rem;
+            font-size: 3rem;
             margin-bottom: 10px;
             background: linear-gradient(90deg, #4fc3f7, #e1f5fe);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .header h2 {
-            font-size: 1.5rem;
-            opacity: 0.9;
-            font-weight: 300;
         }
 
         .controls {
@@ -62,7 +52,6 @@
             display: flex;
             align-items: center;
             gap: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
         .refresh-btn {
@@ -73,13 +62,6 @@
             border-radius: 25px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-        }
-
-        .refresh-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(100, 221, 23, 0.4);
         }
 
         .counter {
@@ -92,12 +74,6 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
             gap: 25px;
-            animation: fadeIn 0.8s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .quote-card {
@@ -106,25 +82,12 @@
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 20px;
             padding: 30px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            overflow: hidden;
+            transition: transform 0.3s;
         }
 
         .quote-card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-5px);
             background: rgba(255, 255, 255, 0.12);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .quote-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, #4fc3f7, #00e5ff);
         }
 
         .quote-text {
@@ -132,7 +95,6 @@
             line-height: 1.6;
             margin-bottom: 25px;
             font-style: italic;
-            position: relative;
             padding-left: 20px;
             border-left: 3px solid #4fc3f7;
         }
@@ -186,23 +148,13 @@
             color: #e1f5fe;
         }
 
-        .stats-bar {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 20px;
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-
         @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2.2rem;
-            }
-            
             .quotes-container {
                 grid-template-columns: 1fr;
-                gap: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
             }
             
             .controls {
@@ -210,57 +162,20 @@
                 right: 10px;
                 left: 10px;
                 justify-content: center;
-                border-radius: 20px;
-                padding: 10px;
             }
-            
-            .refresh-btn {
-                padding: 8px 16px;
-                font-size: 0.9rem;
-            }
-        }
-
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #00c853;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            display: none;
-            z-index: 1001;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
         }
     </style>
 </head>
 <body>
-    <div class="notification" id="notification"></div>
-    
     <div class="controls">
-        <button class="refresh-btn" onclick="fetchQuotes()">
-            <span style="margin-right: 5px;">⟳</span> Refresh Display
-        </button>
-        <div class="counter">
-            Auto-refresh in: <span id="countdown" style="font-weight: bold;">30</span>s
-            <br>
-            <span id="quote-count">0 quotes</span>
-        </div>
+        <button class="refresh-btn" onclick="fetchQuotes()">⟳ Refresh</button>
+        <div class="counter">Quotes: <span id="quote-count">0</span></div>
     </div>
     
     <div class="container">
         <div class="header">
             <h1>✨ Kata-kata Jalsah Salanah ✨</h1>
             <h2>Kumpulan Pesan dan Harapan dari Para Peserta</h2>
-            <div class="stats-bar" id="stats-bar">
-                <span id="last-update">Last updated: --:--:--</span>
-            </div>
         </div>
         
         <div id="quotes-container" class="quotes-container">
@@ -270,108 +185,33 @@
 
     <script>
         // ================= CONFIGURATION =================
+        // REPLACE THESE VALUES WITH YOUR ACTUAL AIRTABLE DETAILS
         const CONFIG = {
-            // REPLACE THESE VALUES WITH YOUR ACTUAL AIRTABLE DETAILS
             AIRTABLE_ACCESS_TOKEN: 'patts6tVnY59MqMmZ.fc9a33c522ec115155a56dc9adf119b7819c57430436f0b17f92a607428e50dc', // Get from Airtable Developer Hub
-            AIRTABLE_BASE_ID: 'appvX87fdFqRidnl8', // Find in your Airtable base URL
-            TABLE_NAME: 'Table 1', // Change if your table has a different name
+            AIRTABLE_BASE_ID: 'appvX87fdFqRidnl8', // Find in your Airtable base URL (app...)
+            TABLE_NAME: 'Table 1', // Your table name exactly as shown in Airtable
             
             // Display settings
             REFRESH_INTERVAL: 30000, // 30 seconds
-            COUNTDOWN_START: 30, // Seconds for countdown
             
             // Filter: Only show approved quotes that aren't empty
+            // Uses your exact field names: Approved and Kata-kata Jalsah
             FILTER_FORMULA: "AND({Approved}, {Kata-kata Jalsah}!='')"
         };
 
-        // ================= APPLICATION STATE =================
-        let refreshTimer = null;
-        let countdownTimer = null;
-        let currentCountdown = CONFIG.COUNTDOWN_START;
-
-        // ================= UTILITY FUNCTIONS =================
-        function showNotification(message, type = 'success') {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.style.background = type === 'error' ? '#f44336' : '#00c853';
-            notification.style.display = 'block';
-            
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 3000);
-        }
-
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function formatTime(date) {
-            return date.toLocaleTimeString('en-US', { 
-                hour12: false,
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
-        }
-
-        // ================= COUNTDOWN FUNCTIONS =================
-        function updateCountdown() {
-            const countdownElement = document.getElementById('countdown');
-            if (countdownElement) {
-                countdownElement.textContent = currentCountdown;
-            }
-            
-            currentCountdown--;
-            
-            if (currentCountdown < 0) {
-                currentCountdown = CONFIG.COUNTDOWN_START;
-                fetchQuotes();
-            }
-        }
-
-        function startCountdown() {
-            clearInterval(countdownTimer);
-            currentCountdown = CONFIG.COUNTDOWN_START;
-            countdownTimer = setInterval(updateCountdown, 1000);
-        }
-
-        // ================= AIRTABLE FUNCTIONS =================
+        // ================= MAIN FUNCTIONS =================
         async function fetchQuotes() {
             const container = document.getElementById('quotes-container');
-            const quoteCountElement = document.getElementById('quote-count');
-            
-            // Validate configuration
-            if (CONFIG.AIRTABLE_ACCESS_TOKEN.includes('YOUR_PERSONAL_ACCESS_TOKEN_HERE') ||
-                CONFIG.AIRTABLE_BASE_ID.includes('YOUR_BASE_ID_HERE')) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <h3>⚠️ Setup Required</h3>
-                        <p>Please update the configuration in the CONFIG section:</p>
-                        <ol style="text-align: left; display: inline-block; margin-top: 15px;">
-                            <li><strong>AIRTABLE_ACCESS_TOKEN:</strong> Your Personal Access Token from Airtable</li>
-                            <li><strong>AIRTABLE_BASE_ID:</strong> Your Base ID from Airtable URL</li>
-                        </ol>
-                        <p style="margin-top: 20px; font-size: 0.9rem;">
-                            See setup instructions in the code comments.
-                        </p>
-                    </div>
-                `;
-                return;
-            }
             
             try {
-                // Build the API URL with filter and sorting
+                // Build the API URL - NO SORT PARAMETER (removed "Created" field)
                 const encodedTableName = encodeURIComponent(CONFIG.TABLE_NAME);
                 const encodedFilter = encodeURIComponent(CONFIG.FILTER_FORMULA);
                 
-                const url = `https://api.airtable.com/v0/${CONFIG.AIRTABLE_BASE_ID}/${encodedTableName}?` +
-                           `filterByFormula=${encodedFilter}&` +
-                           `sort[0][field]=Created&sort[0][direction]=asc`;
-                console.log("DEBUG: Full API URL being called:");
-                console.log(url);
+                // URL WITHOUT sort parameter that was causing the error
+                const url = `https://api.airtable.com/v0/${CONFIG.AIRTABLE_BASE_ID}/${encodedTableName}?filterByFormula=${encodedFilter}`;
+                
+                console.log("DEBUG: Fetching from URL:", url); // Helpful for debugging
                 
                 const response = await fetch(url, {
                     headers: {
@@ -386,37 +226,26 @@
                 
                 const data = await response.json();
                 
-                // Update last updated time
-                const now = new Date();
-                document.getElementById('last-update').textContent = 
-                    `Last updated: ${formatTime(now)}`;
-                
                 // Handle empty results
                 if (!data.records || data.records.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
                             <h3>Belum Ada Kata-kata yang Disetujui</h3>
                             <p>Kata-kata Jalsah akan muncul di sini setelah disetujui oleh panitia.</p>
-                            <p style="margin-top: 15px; font-size: 0.9rem;">
-                                ${data.records ? '0 quotes found' : 'No data received'}
-                            </p>
                         </div>
                     `;
-                    quoteCountElement.textContent = '0 quotes';
-                    showNotification('No approved quotes found', 'info');
-                    startCountdown();
+                    document.getElementById('quote-count').textContent = '0';
                     return;
                 }
                 
                 // Display quotes
                 container.innerHTML = '';
                 
-                data.records.forEach((record, index) => {
+                data.records.forEach((record) => {
                     const fields = record.fields;
                     
                     const quoteCard = document.createElement('div');
                     quoteCard.className = 'quote-card';
-                    quoteCard.style.animationDelay = `${index * 0.05}s`;
                     
                     const kataKata = fields['Kata-kata Jalsah'] || '';
                     const nama = fields['Nama'] || 'Anonymous';
@@ -440,14 +269,7 @@
                 });
                 
                 // Update quote count
-                const count = data.records.length;
-                quoteCountElement.textContent = `${count} quote${count !== 1 ? 's' : ''}`;
-                
-                // Show success notification
-                showNotification(`Loaded ${count} quotes successfully`);
-                
-                // Restart countdown
-                startCountdown();
+                document.getElementById('quote-count').textContent = data.records.length;
                 
             } catch (error) {
                 console.error('Error fetching quotes:', error);
@@ -457,103 +279,52 @@
                         <h3>Error Memuat Data</h3>
                         <p>${escapeHtml(error.message)}</p>
                         <p style="margin-top: 15px; font-size: 0.9rem;">
-                            Periksa koneksi internet dan konfigurasi API.
+                            Periksa: 1) Token & Base ID, 2) Koneksi internet, 3) Nama tabel "Table 1"
                         </p>
                     </div>
                 `;
-                
-                showNotification('Failed to load quotes: ' + error.message, 'error');
-                startCountdown();
             }
         }
 
-        // ================= FULLSCREEN FUNCTIONS =================
+        // Helper: Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Auto-refresh setup
+        function setupAutoRefresh() {
+            // Initial fetch
+            fetchQuotes();
+            
+            // Set up interval for auto-refresh
+            setInterval(fetchQuotes, CONFIG.REFRESH_INTERVAL);
+        }
+
+        // Fullscreen function
         function enterFullscreen() {
             const elem = document.documentElement;
             if (elem.requestFullscreen) {
                 elem.requestFullscreen();
-            } else if (elem.webkitRequestFullscreen) { /* Safari */
-                elem.webkitRequestFullscreen();
-            } else if (elem.msRequestFullscreen) { /* IE11 */
-                elem.msRequestFullscreen();
             }
         }
 
-        function exitFullscreen() {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) { /* Safari */
-                document.webkitExitFullscreen();
-            } else if (document.msExitFullscreen) { /* IE11 */
-                document.msExitFullscreen();
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'F11' || e.key === 'f') {
+                e.preventDefault();
+                enterFullscreen();
             }
-        }
-
-        // ================= KEYBOARD SHORTCUTS =================
-        function setupKeyboardShortcuts() {
-            document.addEventListener('keydown', (e) => {
-                // F11 or F for fullscreen
-                if (e.key === 'F11' || e.key === 'f' || e.key === 'F') {
-                    e.preventDefault();
-                    if (!document.fullscreenElement) {
-                        enterFullscreen();
-                    } else {
-                        exitFullscreen();
-                    }
-                }
-                
-                // R to refresh
-                if (e.key === 'r' || e.key === 'R') {
-                    e.preventDefault();
-                    fetchQuotes();
-                }
-                
-                // Space to toggle fullscreen
-                if (e.key === ' ' && !e.target.matches('input, textarea, button')) {
-                    e.preventDefault();
-                    if (!document.fullscreenElement) {
-                        enterFullscreen();
-                    } else {
-                        exitFullscreen();
-                    }
-                }
-            });
-        }
-
-        // ================= INITIALIZATION =================
-        document.addEventListener('DOMContentLoaded', () => {
-            // Initial fetch
-            fetchQuotes();
-            
-            // Set up auto-refresh
-            refreshTimer = setInterval(fetchQuotes, CONFIG.REFRESH_INTERVAL);
-            
-            // Set up keyboard shortcuts
-            setupKeyboardShortcuts();
-            
-            // Auto-enter fullscreen after a short delay (optional)
-            setTimeout(() => {
-                if (!document.fullscreenElement) {
-                    // Uncomment the next line to auto-enter fullscreen
-                    // enterFullscreen();
-                }
-            }, 1000);
-            
-            // Handle fullscreen changes
-            document.addEventListener('fullscreenchange', () => {
-                if (!document.fullscreenElement) {
-                    // Auto-re-enter fullscreen after 3 seconds (optional)
-                    setTimeout(() => {
-                        if (!document.fullscreenElement) {
-                            // Uncomment the next line to auto-re-enter fullscreen
-                            // enterFullscreen();
-                        }
-                    }, 3000);
-                }
-            });
+            if (e.key === 'r' || e.key === 'R') {
+                e.preventDefault();
+                fetchQuotes();
+            }
         });
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', setupAutoRefresh);
     </script>
 </body>
 </html>
-
-
