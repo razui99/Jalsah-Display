@@ -97,44 +97,38 @@ html, body {
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbx3lJ_9qblXpFTOrDHGdmMszCuJvmydjD0dyvhMn8DjtqCaZPHZDATNyktnzNQIq_ch/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbx_FbPEZIRpQOwFhH5SLC1RfS-uZzIf0mZUi-1ZbXWaAVJNhxWm6lJAORyZbmK2Jp_b/exec";
 
 let messages = [];
 let index = 0;
-const DISPLAY_TIME = 7000;   // 7 seconds per message
-const REFRESH_TIME = 30000; // refresh new approvals every 30s
+const DISPLAY_TIME = 7000;
+const REFRESH_TIME = 30000;
 
-async function loadMessages() {
-  try {
-    const res = await fetch(API_URL, {
-  method: "GET",
-  mode: "cors"
-});
+function loadMessages() {
+  return new Promise(resolve => {
+    const script = document.createElement("script");
+    const callbackName = "jsonpCallback_" + Date.now();
 
-    const data = await res.json();
+    window[callbackName] = function(data) {
+      messages = (data.records || []).map(r => ({
+        kata: r.fields["kata-kata Jalsah"] || "",
+        nama: r.fields["nama"] || "",
+        tanzeem: r.fields["tanzeem"] || "",
+        muqami: r.fields["muqami"] || ""
+      })).filter(m => m.kata.trim() !== "");
 
-    messages = (data.records || []).map(r => ({
-      kata: r.fields["kata-kata Jalsah"] || "",
-      nama: r.fields["nama"] || "",
-      tanzeem: r.fields["tanzeem"] || "",
-      muqami: r.fields["muqami"] || ""
-    })).filter(m => m.kata.trim() !== "");
+      delete window[callbackName];
+      script.remove();
+      resolve();
+    };
 
-    if (index >= messages.length) index = 0;
-
-  } catch (err) {
-    console.error(err);
-  }
+    script.src = API_URL + "?callback=" + callbackName;
+    document.body.appendChild(script);
+  });
 }
 
 function showMessage() {
-  if (!messages.length) {
-    document.getElementById("kata").textContent =
-      "Menunggu sumbangan kata-kata Jalsah…";
-    document.getElementById("name").textContent = "";
-    document.getElementById("location").textContent = "";
-    return;
-  }
+  if (!messages.length) return;
 
   const m = messages[index];
   document.getElementById("kata").textContent = m.kata;
@@ -156,6 +150,7 @@ function showMessage() {
 
 </body>
 </html>
+
 
 
 
