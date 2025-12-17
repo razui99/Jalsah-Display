@@ -370,6 +370,8 @@
                 const url = `https://api.airtable.com/v0/${CONFIG.AIRTABLE_BASE_ID}/${encodedTableName}?` +
                            `filterByFormula=${encodedFilter}&` +
                            `sort[0][field]=Created&sort[0][direction]=asc`;
+                console.log("DEBUG: Full API URL being called:");
+                console.log(url);
                 
                 const response = await fetch(url, {
                     headers: {
@@ -553,4 +555,5 @@
     </script>
 </body>
 </html>
+
 
