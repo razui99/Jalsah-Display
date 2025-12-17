@@ -106,7 +106,11 @@ const REFRESH_TIME = 30000; // refresh new approvals every 30s
 
 async function loadMessages() {
   try {
-    const res = await fetch(API_URL);
+    const res = await fetch(API_URL, {
+  method: "GET",
+  mode: "cors"
+});
+
     const data = await res.json();
 
     messages = (data.records || []).map(r => ({
@@ -152,4 +156,5 @@ function showMessage() {
 
 </body>
 </html>
+
 
